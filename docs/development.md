@@ -1,5 +1,7 @@
 # Celebrity Outfit Matching App - Initial Development Steps
 
+proje dosyası olarak bu dizindeki "outfit-matcher-app" dosyasını kullan ve 15+ yıl tecrübeli bir ios developer, mobil uygulama ve ML/AI mimarı olarak düşün. Son versiyon swift mimarisini kullan.
+
 ## 1. Camera Integration
 
 ### Requirements:
