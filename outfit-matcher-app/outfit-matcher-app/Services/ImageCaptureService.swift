@@ -10,6 +10,7 @@ class ImageCaptureService: ObservableObject {
     @Published var selectedImage: UIImage?
     @Published var isImagePickerPresented = false
     @Published var imageSource: ImageSource = .camera
+    @Published var processedImage: UIImage?
     
     func captureImage(from source: ImageSource) {
         imageSource = source
@@ -17,18 +18,29 @@ class ImageCaptureService: ObservableObject {
     }
     
     func processImage(_ image: UIImage) {
-        // Görüntü boyutunu optimize et (max 1024x1024)
-        let maxDimension: CGFloat = 1024.0
-        let scale = min(maxDimension / image.size.width, maxDimension / image.size.height)
+        // Görüntü yönünü düzelt
+        let correctedImage = image.fixOrientation()
         
-        if scale < 1.0 {
-            let newSize = CGSize(width: image.size.width * scale, height: image.size.height * scale)
-            UIGraphicsBeginImageContextWithOptions(newSize, false, 0.0)
-            image.draw(in: CGRect(origin: .zero, size: newSize))
-            selectedImage = UIGraphicsGetImageFromCurrentImageContext()
-            UIGraphicsEndImageContext()
+        // Görüntü boyutunu optimize et
+        let maxDimension: CGFloat = 1024.0
+        let scale = min(maxDimension / correctedImage.size.width, maxDimension / correctedImage.size.height)
+        let targetSize = CGSize(
+            width: correctedImage.size.width * scale,
+            height: correctedImage.size.height * scale
+        )
+        
+        // Görüntüyü yeniden boyutlandır
+        guard let resizedImage = ImageProcessingService.shared.resizeImage(correctedImage, targetSize: targetSize) else {
+            selectedImage = correctedImage
+            return
+        }
+        
+        // ML için görüntüyü hazırla
+        if let processedMLImage = ImageProcessingService.shared.prepareImageForML(resizedImage) {
+            selectedImage = resizedImage
+            processedImage = processedMLImage
         } else {
-            selectedImage = image
+            selectedImage = resizedImage
         }
     }
 } 

@@ -12,6 +12,14 @@ struct ImagePicker: UIViewControllerRepresentable {
         picker.delegate = context.coordinator
         picker.allowsEditing = true
         picker.modalPresentationStyle = .fullScreen
+        
+        // Kamera için ek ayarlar
+        if sourceType == .camera {
+            picker.cameraCaptureMode = .photo
+            picker.cameraDevice = .rear
+            picker.showsCameraControls = true
+        }
+        
         return picker
     }
     
@@ -29,8 +37,10 @@ struct ImagePicker: UIViewControllerRepresentable {
         }
         
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-            if let image = info[.originalImage] as? UIImage {
-                parent.onImageSelected(image)
+            if let editedImage = info[.editedImage] as? UIImage {
+                parent.onImageSelected(editedImage)
+            } else if let originalImage = info[.originalImage] as? UIImage {
+                parent.onImageSelected(originalImage)
             }
             parent.presentationMode.wrappedValue.dismiss()
         }

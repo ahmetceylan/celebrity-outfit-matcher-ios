@@ -5,36 +5,52 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 20) {
+            ZStack {
+                // Ana görüntü alanı
                 if let image = imageCaptureService.selectedImage {
-                    Image(uiImage: image)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 300)
-                        .cornerRadius(10)
+                    GeometryReader { geometry in
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxWidth: min(geometry.size.width, 500),
+                                   maxHeight: min(geometry.size.height * 0.7, 700))
+                            .frame(width: geometry.size.width, height: geometry.size.height)
+                            .clipped()
+                            .ignoresSafeArea()
+                    }
                 } else {
+                    Color.black
+                        .ignoresSafeArea()
                     Image(systemName: "camera.fill")
                         .font(.system(size: 100))
                         .foregroundColor(.gray)
-                        .frame(height: 300)
                 }
                 
-                HStack(spacing: 20) {
-                    Button(action: { imageCaptureService.captureImage(from: .camera) }) {
-                        Label("Fotoğraf Çek", systemImage: "camera")
-                            .frame(maxWidth: .infinity)
+                // Kontrol butonları
+                VStack {
+                    Spacer()
+                    HStack(spacing: 20) {
+                        Button(action: { imageCaptureService.captureImage(from: .camera) }) {
+                            Label("Fotoğraf Çek", systemImage: "camera")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(.ultraThinMaterial)
+                                .cornerRadius(10)
+                        }
+                        
+                        Button(action: { imageCaptureService.captureImage(from: .photoLibrary) }) {
+                            Label("Galeriden Seç", systemImage: "photo.on.rectangle")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(.ultraThinMaterial)
+                                .cornerRadius(10)
+                        }
                     }
-                    .buttonStyle(.bordered)
-                    
-                    Button(action: { imageCaptureService.captureImage(from: .photoLibrary) }) {
-                        Label("Galeriden Seç", systemImage: "photo.on.rectangle")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.bordered)
+                    .padding(.horizontal)
+                    .padding(.bottom, 30)
                 }
-                .padding(.horizontal)
             }
-            .navigationTitle("Kıyafet Fotoğrafı")
+            .navigationBarTitleDisplayMode(.inline)
             .sheet(isPresented: $imageCaptureService.isImagePickerPresented) {
                 ImagePicker(
                     sourceType: imageCaptureService.imageSource == .camera ? .camera : .photoLibrary,
@@ -44,6 +60,7 @@ struct ContentView: View {
                 )
             }
         }
+        .navigationViewStyle(.stack)
     }
 }
 
