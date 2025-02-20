@@ -2,6 +2,8 @@
 
 proje dosyası olarak bu dizindeki "outfit-matcher-app" dosyasını kullan ve 15+ yıl tecrübeli bir ios developer, mobil uygulama ve ML/AI mimarı olarak düşün. Son versiyon swift mimarisini kullan.
 
+proje ile ilgili bir not: info.plist dosyası build hatasına sebep olduğu için onu ignore edebilirsin, ben manuel olarak gerekli izinleri gireceğim, sen sadece eklenmesi gereken izinleri bana listele
+
 ## 1. Camera Integration
 
 ### Requirements:
